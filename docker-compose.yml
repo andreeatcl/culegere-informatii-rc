@@ -1,0 +1,126 @@
+version: "3.9"
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: wmi_server
+    ports:
+      - "9000:9000"
+    networks:
+      - wmi_net
+
+  # Target A
+  target_a:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: target_a
+    hostname: target_a
+    stdin_open: true
+    tty: true
+    environment:
+      SERVER_HOST: server
+      SERVER_PORT: "9000"
+      SIMULATE_FREEZE: "0"
+    depends_on:
+      - server
+    networks:
+      - wmi_net
+
+  # Target B
+  target_b:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: target_b
+    hostname: target_b
+    stdin_open: true
+    tty: true
+    environment:
+      SERVER_HOST: server
+      SERVER_PORT: "9000"
+      SIMULATE_FREEZE: "0"
+    depends_on:
+      - server
+    networks:
+      - wmi_net
+
+  # Operator
+  operator:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: operator
+    hostname: operator
+    stdin_open: true
+    tty: true
+    environment:
+      SERVER_HOST: server
+      SERVER_PORT: "9000"
+      SIMULATE_FREEZE: "0"
+    depends_on:
+      - server
+    networks:
+      - wmi_net
+
+  # Target C
+  target_c:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: target_c
+    hostname: target_c
+    stdin_open: true
+    tty: true
+    environment:
+      SERVER_HOST: server
+      SERVER_PORT: "9000"
+      SIMULATE_FREEZE: "0"
+    depends_on:
+      - server
+    networks:
+      - wmi_net
+
+  # Target D
+  target_d:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: target_d
+    hostname: target_d
+    stdin_open: true
+    tty: true
+    environment:
+      SERVER_HOST: server
+      SERVER_PORT: "9000"
+      SIMULATE_FREEZE: "0"
+    depends_on:
+      - server
+    networks:
+      - wmi_net
+
+  # Target FREEZE – simulates a timeout
+  target_freeze:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: target_freeze
+    hostname: target_freeze
+    stdin_open: true
+    tty: true
+    environment:
+      SERVER_HOST: server
+      SERVER_PORT: "9000"
+      SIMULATE_FREEZE: "1"
+    depends_on:
+      - server
+    networks:
+      - wmi_net
+    profiles:
+      - demo # only starts with: docker compose --profile demo up
+
+networks:
+  wmi_net:
+    driver: bridge
